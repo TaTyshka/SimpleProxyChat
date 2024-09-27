@@ -113,7 +113,13 @@ public class VelocityServerListener {
     }
 
     protected void join(Player player, String serverName) {
-        chatHandler.runProxyJoinMessage(player.getUsername(), player.getUniqueId(), serverName, this::sendToAllServers);
+        if (player.getClientBrand().contains("forge")) {
+            plugin.getProxyServer().getScheduler().buildTask(plugin, () ->
+                    chatHandler.runProxyJoinMessage(player.getUsername(), player.getUniqueId(), serverName, this::sendToAllServers)
+            ).delay(50, TimeUnit.MILLISECONDS).schedule();
+        } else {
+            chatHandler.runProxyJoinMessage(player.getUsername(), player.getUniqueId(), serverName, this::sendToAllServers);
+        }
     }
 
     private void startServerStatusDetection() {
